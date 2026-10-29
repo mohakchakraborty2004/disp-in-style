@@ -21,6 +21,8 @@ import numpy as np
 
 
 class DustEffect:
+    COVER_GAIN = 4.0
+
     def __init__(
         self,
         width: int,
@@ -100,7 +102,8 @@ class DustEffect:
         tmap = self._t_rev if self._reverse else self._t_fwd
         thr = p * (1.0 + self.W)
         # hidden = person pixels already released from the wave
-        hidden = mask * (tmap <= thr)
+        # soft mask edges would let a faint copy of the person through; cover anything above ~25 %
+        hidden = np.clip(mask * self.COVER_GAIN, 0.0, 1.0) * (tmap <= thr)
         out = cv2.blendLinear(plate, live, hidden, 1.0 - hidden)
         if p < 1.0 and self._n:
             self._draw_particles(out, thr)

@@ -102,4 +102,4 @@ Tests cover the state machine, gesture/audio/trigger logic with synthetic input,
 * *"Could not open the virtual camera"*: do the OBS step above, and make sure OBS itself is closed.
 * *Discord doesn't list "OBS Virtual Camera"*: restart Discord after the first registration.
 * *Feed is mirrored in the preview?* The preview is not mirrored; use `--mirror` to flip the output too.
-* *Ghost of you remains / halo*: raise `--mask-grow`, recapture the background, keep lighting stable.
+* *Ghost of you remains / halo / dark silhouette*: raise `--mask-grow` (default 5; try 8-10), recapture the background, keep lighting stable.

@@ -59,7 +59,7 @@ class Config:
 
     # --- segmentation / background ---
     seg_threshold: float = _f(0.5, "person mask threshold (0..1)")
-    mask_grow: int = _f(3, "grow the person mask by this many (low-res) pixels to hide halos")
+    mask_grow: int = _f(5, "grow the person mask by this many (low-res) pixels to hide halos")
     background: Optional[str] = _f(None, "path to a saved background image to use instead of capturing")
     auto_background: bool = _f(True, "auto-capture the background at startup once you step out of frame")
     bg_delay: float = _f(3.0, "seconds countdown after pressing 'b' before the background is captured")

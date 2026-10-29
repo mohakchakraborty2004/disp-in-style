@@ -6,7 +6,7 @@ from typing import Callable, List, Optional, Sequence
 
 import numpy as np
 
-from .background import AutoCapture, BackgroundPlate
+from .background import AutoCapture, BackgroundPlate, match_plate
 from .config import Config
 from .effect import DustEffect
 from .snap import GestureSnapDetector, SnapTrigger
@@ -120,4 +120,4 @@ class Pipeline:
             p = 1.0
         else:
             p = 1.0 - self.sm.progress
-        return self.effect.render(frame, mask, plate, p)
+        return self.effect.render(frame, mask, match_plate(plate, frame, mask), p)

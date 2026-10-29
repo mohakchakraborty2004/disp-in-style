@@ -33,7 +33,7 @@ class Segmenter:
 
     SMALL_W = 256
 
-    def __init__(self, threshold: float = 0.5, grow: int = 3, smoothing: float = 0.5):
+    def __init__(self, threshold: float = 0.5, grow: int = 5, smoothing: float = 0.5):
         self.threshold = threshold
         self.grow = grow
         self.smoothing = smoothing
