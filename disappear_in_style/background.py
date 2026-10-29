@@ -69,6 +69,36 @@ class BackgroundPlate:
         return cv2.resize(small, (w, h), interpolation=cv2.INTER_LINEAR)
 
 
+def match_plate(plate: np.ndarray, live: np.ndarray, mask: np.ndarray, scale: int = 8) -> np.ndarray:
+    """Re-light the plate to the live frame so the patch where the person was does not stand out.
+
+    Webcams drift (auto exposure / white balance, and the first frames after start are often dark),
+    so a stored plate can be darker than the room now looks: pasting it over the person leaves a dark
+    silhouette. The live-minus-plate difference is measured where there is no person, smoothly
+    extrapolated into the person region (normalised blur) and added to the plate.
+    """
+    h, w = plate.shape[:2]
+    sw, sh = max(1, w // scale), max(1, h // scale)
+    ls = cv2.resize(live, (sw, sh), interpolation=cv2.INTER_AREA).astype(np.float32)
+    ps = cv2.resize(plate, (sw, sh), interpolation=cv2.INTER_AREA).astype(np.float32)
+    ms = cv2.resize((mask > 0.02).astype(np.uint8), (sw, sh), interpolation=cv2.INTER_AREA)
+    ms = cv2.dilate(ms, np.ones((5, 5), np.uint8))  # keep the person's rim / shadow out of the sample
+    wgt = (ms == 0).astype(np.float32)
+    if wgt.sum() < 16:
+        return plate
+    diff = np.clip(ls - ps, -80.0, 80.0)
+    sigma = max(2.0, sw / 10.0)
+    num = cv2.GaussianBlur(diff * wgt[..., None], (0, 0), sigma)
+    den = cv2.GaussianBlur(wgt, (0, 0), sigma)[..., None]
+    mean = (diff * wgt[..., None]).sum(axis=(0, 1)) / wgt.sum()
+    field = np.where(den > 1e-3, num / np.maximum(den, 1e-3), mean)
+    # blend towards the global mean where there is little support nearby
+    conf = np.clip(den * 4.0, 0.0, 1.0)
+    field = conf * field + (1.0 - conf) * mean
+    field = cv2.resize(field.astype(np.float32), (w, h), interpolation=cv2.INTER_LINEAR)
+    return np.clip(plate.astype(np.float32) + field, 0, 255).astype(np.uint8)
+
+
 class AutoCapture:
     """Fires once the person has been out of frame for `stable_frames` consecutive frames."""
 
