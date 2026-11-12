@@ -1,5 +1,7 @@
 # disappear-in-style
 
+<!-- Dummy PR for testing GitHub review notification delivery. -->
+
 Snap your fingers and **vanish from your Discord video call like the Thanos snap** in *Avengers: Infinity War*.
 You turn to dust in a left-to-right, noise-driven wave, the dust drifts up and sideways and fades,
 and your call shows the **empty room behind you**. Snap again and the dust flows back and reforms you.
